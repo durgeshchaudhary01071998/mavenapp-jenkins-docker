@@ -1,0 +1,13 @@
+package com.devops.mavenapp.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HomeController {
+
+    @GetMapping("/")
+    public String home() {
+        return "✅ Maven app via Jenkins & Docker is running!";
+    }
+}
