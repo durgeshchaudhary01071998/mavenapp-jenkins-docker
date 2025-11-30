@@ -9,7 +9,7 @@ pipeline {
 
     options {
         timestamps()
-        ansiColor('xterm')
+        // removed ansiColor option (it is not a valid declarative option)
     }
 
     stages {
