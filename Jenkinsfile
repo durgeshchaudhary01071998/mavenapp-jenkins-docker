@@ -2,42 +2,44 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME   = 'mavenapp'
-        IMAGE_NAME = 'mavenapp'
-        CONTAINER_PORT = '8081'
-        HOST_PORT      = '8082'   // Jenkins app port
+        APP_NAME = 'mavenapp-deployment'
+        IMAGE    = 'mavenapp'
+        PORT     = '8081'
+    }
+
+    options {
+        timestamps()
+        ansiColor('xterm')
     }
 
     stages {
-        stage('Checkout') {
+        stage('Git Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build with Maven') {
+        stage('Maven Build') {
             steps {
                 sh 'mvn -B clean package -DskipTests'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Image Build') {
             steps {
                 sh """
-                docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
-                docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest
+                docker build -t ${IMAGE}:${BUILD_NUMBER} .
+                docker tag ${IMAGE}:${BUILD_NUMBER} ${IMAGE}:latest
                 """
             }
         }
 
-        stage('Deploy Docker Container') {
+        stage('Kubernetes Deploy') {
             steps {
                 sh """
-                docker rm -f ${APP_NAME} || true
-
-                docker run -d --name ${APP_NAME} \
-                  -p ${HOST_PORT}:${CONTAINER_PORT} \
-                  ${IMAGE_NAME}:${BUILD_NUMBER}
+                kubectl apply -f k8s/deployment.yaml
+                kubectl apply -f k8s/service.yaml
+                kubectl rollout status deployment/mavenapp-deployment
                 """
             }
         }
@@ -45,7 +47,10 @@ pipeline {
 
     post {
         success {
-            echo "App deployed successfully at: http://localhost:${HOST_PORT}"
+            echo "✅ Deployment successful → App URL: http://localhost:30080"
+        }
+        failure {
+            echo "❌ Deployment/Build failed – check logs"
         }
     }
 }
