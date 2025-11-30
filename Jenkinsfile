@@ -16,10 +16,10 @@ pipeline {
         SERVICE_PORT    = '30080'  // NodePort (K8s service)
 
         // Flags to enable/disable optional stages
-        SONARQUBE_ENABLED   = 'false'     // set to 'true' when SonarQube is ready
+        SONARQUBE_ENABLED   = 'true'     // set to 'true' when SonarQube is ready
         SONARQUBE_SERVER    = 'Local-Sonar' // Jenkins Sonar server name
 
-        OWASP_ENABLED       = 'false'     // set to 'true' when OWASP plugin is ready
+        OWASP_ENABLED       = 'true'     // set to 'true' when OWASP plugin is ready
 
         TRIVY_FAIL_ON_HIGH  = 'false'     // set 'true' to fail pipeline on HIGH/CRITICAL
     }
