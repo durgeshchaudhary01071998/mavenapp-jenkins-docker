@@ -36,13 +36,16 @@ pipeline {
 
         stage('Kubernetes Deploy') {
             steps {
-                sh """
-                kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f k8s/service.yaml
-                kubectl rollout status deployment/mavenapp-deployment
-                """
+                withEnv(['KUBECONFIG=/var/jenkins_home/.kube/config']) {
+                    sh """
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                    kubectl rollout status deployment/mavenapp-deployment
+                    """
+                }
             }
         }
+
     }
 
     post {
